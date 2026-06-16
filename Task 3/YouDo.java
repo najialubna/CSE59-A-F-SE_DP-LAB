@@ -1,81 +1,82 @@
+ public class Main {
 
-class User {
-    private String username;
-    private String email;
+    
+    static class User {
+        private String username;
+        private String email;
 
-    public User(String username, String email) {
-        this.username = username;
-        this.email = email;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-}
-
-class EmailValidator {
-
-    public boolean isValid(String email) {
-        if (email != null && email.contains("@")) {
-            return true;
+        public User(String username, String email) {
+            this.username = username;
+            this.email = email;
         }
 
-        System.out.println("Invalid email format.");
-        return false;
-    }
-}
+        public String getUsername() {
+            return username;
+        }
 
-
-interface UserRepository {
-    void save(User user);
-}
-
-
-class DatabaseUserRepository implements UserRepository {
-
-    @Override
-    public void save(User user) {
-        System.out.println("Connecting to database...");
-        System.out.println("Saving user " + user.getUsername() + " to the users table.");
-    }
-}
-
-
-class UserService {
-
-    private UserRepository userRepository;
-    private EmailValidator emailValidator;
-
-    public UserService(UserRepository userRepository,
-                       EmailValidator emailValidator) {
-        this.userRepository = userRepository;
-        this.emailValidator = emailValidator;
+        public String getEmail() {
+            return email;
+        }
     }
 
-    public void registerUser(User user) {
-        if (emailValidator.isValid(user.getEmail())) {
+   
+    static class EmailValidator {
+        public boolean isValid(String email) {
+            return email != null && email.contains("@");
+        }
+    }
+
+    
+    interface UserRepository {
+        void save(User user);
+    }
+
+   
+    static class DatabaseUserRepository implements UserRepository {
+
+        @Override
+        public void save(User user) {
+            System.out.println("Connecting to database...");
+            System.out.println(
+                "Saving user " + user.getUsername() + " to the users table."
+            );
+        }
+    }
+
+    
+    static class UserService {
+
+        private UserRepository userRepository;
+        private EmailValidator emailValidator;
+
+        public UserService(UserRepository userRepository,
+                           EmailValidator emailValidator) {
+            this.userRepository = userRepository;
+            this.emailValidator = emailValidator;
+        }
+
+        public void registerUser(User user) {
+
+            if (!emailValidator.isValid(user.getEmail())) {
+                System.out.println("Invalid email format.");
+                return;
+            }
+
             userRepository.save(user);
         }
     }
-}
 
-
-public class Main {
-
+   
     public static void main(String[] args) {
 
-        User user = new User("john", "john@example.com");
+        User user = new User("John", "john@gmail.com");
 
         UserRepository repository = new DatabaseUserRepository();
         EmailValidator validator = new EmailValidator();
 
-        UserService userService =
+        UserService service =
                 new UserService(repository, validator);
 
-        userService.registerUser(user);
+        service.registerUser(user);
     }
 }
